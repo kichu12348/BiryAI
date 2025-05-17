@@ -14,8 +14,7 @@
       "channel": "preview",
       "android": {
         "buildType": "apk"
-      },
-      "prebuildCommand": "npm i --force"
+      }
     },
     "production": {
       "autoIncrement": true,
