@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
+    "@react-native-async-storage/async-storage": "^2.1.2",
     "@tensorflow/tfjs": "^4.22.0",
     "@tensorflow/tfjs-react-native": "^1.0.0",
     "expo": "~53.0.9",
@@ -23,9 +24,11 @@
     "expo-navigation-bar": "^4.2.4",
     "expo-splash-screen": "^0.30.8",
     "expo-status-bar": "~2.2.3",
+    "expo-system-ui": "~5.0.7",
     "expo-updates": "^0.28.13",
     "react": "19.0.0",
     "react-native": "0.79.2",
+    "react-native-fs": "^2.20.0",
     "react-native-reanimated": "^3.17.5",
     "react-native-safe-area-context": "^5.4.0"
   },
@@ -36,7 +39,10 @@
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
-        "listUnknownPackages": false
+        "listUnknownPackages": false,
+        "exclude":[
+          "react-native-fs"
+        ]
       }
     }
   }
