@@ -165,7 +165,7 @@ const Main = () => {
       setIsBiryani(pred[0] > pred[1]);
     } catch (error) {
       console.log("Error getting prediction:", error.message);
-      setError("Failed to process the image");
+      setError("Failed to process the image " + error.message);
     } finally {
       setIsProcessing(false);
     }
