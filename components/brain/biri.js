@@ -1,17 +1,42 @@
 import * as tf from "@tensorflow/tfjs";
-import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
+import { decodeJpeg } from "@tensorflow/tfjs-react-native";
 import * as FileSystem from "expo-file-system";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const modelJson = require("../../assets/model/model.json");
-const modelWeights = [require("../../assets/model/weights.bin")];
+const modelWeights =
+  "https://cdn.jsdelivr.net/gh/kichu12348/BiryAI@master/assets/model/weights.bin";
+const modelJson =
+  "https://cdn.jsdelivr.net/gh/kichu12348/BiryAI@master/assets/model/model.json";
 
+async function downloadAndCacheModel() {
+  try {
+    async function downloadFile() {
+      const fileDir = FileSystem.documentDirectory;
+      const modelJsonUri = `${fileDir}model.json`;
+      const modelWeightsUri = `${fileDir}weights.bin`;
+      const { uri } = await FileSystem.downloadAsync(modelJson, modelJsonUri);
+      await FileSystem.downloadAsync(modelWeights, modelWeightsUri);
+      await AsyncStorage.setItem("modelJson", uri);
+      return uri;
+    }
+    const modelJsonUri = await AsyncStorage.getItem("modelJson");
+    if (!modelJsonUri) {
+      const uri = await downloadFile();
+      return uri;
+    }
+
+    return modelJsonUri;
+  } catch (error) {
+    console.error("Error downloading model:", error);
+    throw error;
+  }
+}
 
 async function loadModel() {
   try {
     await tf.ready();
-    const model = await tf.loadLayersModel(
-      bundleResourceIO(modelJson, modelWeights)
-    );
+    const modelJsonUri = await downloadAndCacheModel();
+    const model = await tf.loadLayersModel(modelJsonUri);
     return model;
   } catch (error) {
     console.error("Error loading model:", error);
