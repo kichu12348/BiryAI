@@ -35,8 +35,8 @@ async function downloadAndCacheModel() {
 async function loadModel() {
   try {
     await tf.ready();
-    const modelJsonUri = await downloadAndCacheModel();
-    const model = await tf.loadLayersModel(modelJsonUri);
+    // const modelJsonUri = await downloadAndCacheModel();
+    const model = await tf.loadLayersModel(modelJson);
     return model;
   } catch (error) {
     console.error("Error loading model:", error);
