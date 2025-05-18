@@ -511,8 +511,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   bottomBarExpandedImage: {
-    width: "100%",
-    height: "80%",
+    width: width - 40,
+    height: ScreenHeight*0.5,
     alignItems: "center",
     justifyContent: "center",
   },
