@@ -38,7 +38,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="light" translucent />
+      <StatusBar style="light" translucent hidden />
       <Main />
     </SafeAreaProvider>
   );

@@ -31,7 +31,7 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 
-const { width, height: ScreenHeight } = Dimensions.get("window");
+const { width, height: ScreenHeight } = Dimensions.get("screen");
 
 const Main = () => {
   const [isModelReady, setIsModelReady] = useState(false);
@@ -48,6 +48,7 @@ const Main = () => {
   const [isTorchOn, setIsTorchOn] = useState(false);
   const [isBiryani, setIsBiryani] = useState(false);
   const [modelLoadError, setModelLoadError] = useState(null);
+  const [isExpanding, setIsExpanding] = useState(false);
   const [focusSquareLocation, setFocusSquareLocation] = useState({
     x: 0,
     y: 0,
@@ -145,6 +146,7 @@ const Main = () => {
     const photo = await cameraRef?.current?.takePictureAsync({
       quality: 1,
       imageType: "jpg",
+      CameraRatio:'16:9',
     });
     setIsTakingPicture(false);
     if (photo.uri) {
@@ -347,7 +349,7 @@ const Main = () => {
                   <Entypo name="cross" size={40} color="white" />
                 </TouchableOpacity>
               </View>
-              {imageUri && (
+              {imageUri && !isExpanding && (
                 <View style={styles.bottomBarExpandedContent}>
                   <ImageBackground
                     source={{ uri: imageUri }}
