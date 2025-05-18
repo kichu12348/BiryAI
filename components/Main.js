@@ -7,6 +7,7 @@ import {
   Pressable,
   ActivityIndicator,
   ImageBackground,
+  Modal,
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { loadModel, getPrediction } from "./brain/biri";
@@ -24,12 +25,6 @@ import {
 } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
-import Animated, {
-  Easing,
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-} from "react-native-reanimated";
 
 const { width, height: ScreenHeight } = Dimensions.get("screen");
 
@@ -57,40 +52,15 @@ const Main = () => {
   const cameraRef = useRef(null);
 
   const insets = useSafeAreaInsets();
-  const height = useSharedValue(0);
-  const borderRadius = useSharedValue(30);
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      minHeight: height.value,
-      borderTopEndRadius: borderRadius.value,
-      borderTopStartRadius: borderRadius.value,
-    };
-  });
 
   const expandBottomBar = () => {
     if (isBottomBarExpanded) return;
     setIsBottomBarExpanded(true);
-    height.value = withTiming(ScreenHeight, {
-      duration: 300,
-      easing: Easing.out(Easing.ease),
-    });
-    borderRadius.value = withTiming(0, {
-      duration: 300,
-      easing: Easing.out(Easing.ease),
-    });
   };
 
   const collapseBottomBar = () => {
     if (!isBottomBarExpanded) return;
     setIsBottomBarExpanded(false);
-    height.value = withTiming(100, {
-      duration: 300,
-      easing: Easing.inOut(Easing.ease),
-    });
-    borderRadius.value = withTiming(30, {
-      duration: 300,
-      easing: Easing.inOut(Easing.ease),
-    });
     setTimeout(() => {
       setImageUri(null);
       setPrediction(null);
@@ -146,7 +116,7 @@ const Main = () => {
     const photo = await cameraRef?.current?.takePictureAsync({
       quality: 1,
       imageType: "jpg",
-      CameraRatio:'16:9',
+      CameraRatio: "16:9",
     });
     setIsTakingPicture(false);
     if (photo.uri) {
@@ -275,21 +245,21 @@ const Main = () => {
             ]}
           />
         )}
-        <Animated.View
-          style={[
-            styles.cameraControls,
-            animatedStyle,
-            { paddingBottom: insets.bottom + 20 },
-          ]}
-        >
-          <BlurView
-            intensity={30}
-            style={StyleSheet.absoluteFill}
-            tint="dark"
-            experimentalBlurMethod="dimezisBlurView"
-            blurReductionFactor={12}
-          />
-          {!isBottomBarExpanded ? (
+        {!isBottomBarExpanded && (
+          <View
+            style={[
+              styles.cameraControls,
+              { paddingBottom: insets.bottom + 20 },
+            ]}
+          >
+            <BlurView
+              intensity={30}
+              style={styles.blurView}
+              tint="dark"
+              experimentalBlurMethod="dimezisBlurView"
+              blurReductionFactor={12}
+            />
+
             <>
               <TouchableOpacity
                 style={styles.controlBtn}
@@ -333,84 +303,90 @@ const Main = () => {
                 />
               </TouchableOpacity> */}
             </>
-          ) : (
-            <View
-              style={[
-                styles.bottomBarExpandedContainer,
-                { paddingTop: insets.top },
-              ]}
+          </View>
+        )}
+      </View>
+      <Modal
+        animationType="slide"
+        transparent
+        visible={isBottomBarExpanded}
+        onRequestClose={collapseBottomBar}
+        hardwareAccelerated
+        statusBarTranslucent
+      >
+        <View
+          style={[
+            styles.bottomBarExpandedContainer,
+            { paddingTop: insets.top },
+          ]}
+        >
+          <View style={styles.bottomBarExpandedHeader}>
+            <TouchableOpacity
+              onPress={collapseBottomBar}
+              style={styles.controlBtn}
+              activeOpacity={0.8}
             >
-              <View style={styles.bottomBarExpandedHeader}>
-                <TouchableOpacity
-                  onPress={collapseBottomBar}
-                  style={styles.controlBtn}
-                  activeOpacity={0.8}
-                >
-                  <Entypo name="cross" size={40} color="white" />
-                </TouchableOpacity>
-              </View>
-              {imageUri && !isExpanding && (
-                <View style={styles.bottomBarExpandedContent}>
-                  <ImageBackground
-                    source={{ uri: imageUri }}
-                    style={styles.bottomBarExpandedImage}
-                    resizeMode="contain"
-                  >
-                    {prediction && (
-                      <View style={styles.predictionOverLay}>
-                        <Text style={styles.predictionText}>
-                          {isBiryani
-                            ? "Dis is a Biryani!😎"
-                            : "Dat not a Biryani😞"}
-                        </Text>
-                        <Text style={styles.predictionTextSecondary}>
-                          {isBiryani
-                            ? `Biryani: ${(prediction[0] * 100).toFixed(2)}%`
-                            : `Not Biryani: ${(prediction[1] * 100).toFixed(
-                                2
-                              )}%`}
-                        </Text>
-                      </View>
-                    )}
-                  </ImageBackground>
-                  <TouchableOpacity
-                    onPress={() => {
-                      handleImageProcessing(imageUri);
-                    }}
-                    style={styles.button}
-                    activeOpacity={0.8}
-                    disabled={isProcessing}
-                  >
-                    <LinearGradient
-                      colors={[colors.primary, colors.secondary]}
-                      style={styles.buttonGradient}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
+              <Entypo name="cross" size={40} color="white" />
+            </TouchableOpacity>
+          </View>
+          {imageUri && !isExpanding && (
+            <View style={styles.bottomBarExpandedContent}>
+              <ImageBackground
+                source={{ uri: imageUri }}
+                style={styles.bottomBarExpandedImage}
+                resizeMode="contain"
+              >
+                {prediction && (
+                  <View style={styles.predictionOverLay}>
+                    <Text style={styles.predictionText}>
+                      {isBiryani
+                        ? "Dis is a Biryani!😎"
+                        : "Dat not a Biryani😞"}
+                    </Text>
+                    <Text style={styles.predictionTextSecondary}>
+                      {isBiryani
+                        ? `Biryani: ${(prediction[0] * 100).toFixed(2)}%`
+                        : `Not Biryani: ${(prediction[1] * 100).toFixed(2)}%`}
+                    </Text>
+                  </View>
+                )}
+              </ImageBackground>
+              <TouchableOpacity
+                onPress={() => {
+                  handleImageProcessing(imageUri);
+                }}
+                style={styles.button}
+                activeOpacity={0.8}
+                disabled={isProcessing}
+              >
+                <LinearGradient
+                  colors={[colors.primary, colors.secondary]}
+                  style={styles.buttonGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                />
+                {!isProcessing ? (
+                  <>
+                    <Text style={styles.btnText}>Check If Biryani</Text>
+                    <MaterialCommunityIcons
+                      name="image-search"
+                      size={24}
+                      color="white"
                     />
-                    {!isProcessing ? (
-                      <>
-                        <Text style={styles.btnText}>Check If Biryani</Text>
-                        <MaterialCommunityIcons
-                          name="image-search"
-                          size={24}
-                          color="white"
-                        />
-                      </>
-                    ) : (
-                      <ActivityIndicator
-                        size="small"
-                        color={colors.textPrimary}
-                        style={{ marginLeft: 10 }}
-                      />
-                    )}
-                  </TouchableOpacity>
-                  {error && <Text style={styles.errorText}>{error}</Text>}
-                </View>
-              )}
+                  </>
+                ) : (
+                  <ActivityIndicator
+                    size="small"
+                    color={colors.textPrimary}
+                    style={{ marginLeft: 10 }}
+                  />
+                )}
+              </TouchableOpacity>
+              {error && <Text style={styles.errorText}>{error}</Text>}
             </View>
           )}
-        </Animated.View>
-      </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -475,6 +451,15 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.3)",
     zIndex: 10,
     position: "relative",
+    minHeight: 100,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+  },
+  blurView: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    ...StyleSheet.absoluteFillObject,
   },
   controlBtn: {
     minWidth: 50,
@@ -492,9 +477,7 @@ const styles = StyleSheet.create({
     borderColor: colors.textPrimary,
   },
   bottomBarExpandedContainer: {
-    height: "100%",
-    width: "100%",
-    display: "flex",
+    flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
   },
@@ -514,7 +497,7 @@ const styles = StyleSheet.create({
   },
   bottomBarExpandedImage: {
     width: width - 40,
-    height: ScreenHeight*0.5,
+    height: ScreenHeight * 0.5,
     alignItems: "center",
     justifyContent: "center",
   },
