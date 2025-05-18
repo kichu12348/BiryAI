@@ -40,7 +40,7 @@
     "doctor": {
       "reactNativeDirectoryCheck": {
         "listUnknownPackages": false,
-        "exclude":[
+        "exclude": [
           "react-native-fs"
         ]
       }

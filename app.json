@@ -6,6 +6,9 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -38,7 +41,8 @@
         {
           "cameraPermission": "Lemme use your camera, pls pls pls...."
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "extra": {
       "eas": {

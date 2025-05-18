@@ -47,6 +47,7 @@ const Main = () => {
   const [isTakingPicture, setIsTakingPicture] = useState(false);
   const [isTorchOn, setIsTorchOn] = useState(false);
   const [isBiryani, setIsBiryani] = useState(false);
+  const [modelLoadError, setModelLoadError] = useState(null);
   const [focusSquareLocation, setFocusSquareLocation] = useState({
     x: 0,
     y: 0,
@@ -105,7 +106,8 @@ const Main = () => {
       })
       .catch((error) => {
         console.log("Error loading model:", error.message);
-        setError("Failed to load the model");
+        setModelLoadError("Failed to load the model " + error.message);
+        SplashScreen.hideAsync();
       });
   }, []);
 
@@ -214,6 +216,14 @@ const Main = () => {
     setIsTorchOn((prev) => !prev);
   };
 
+  if (modelLoadError) {
+    return (
+      <View style={styles.noPerContainer}>
+        <Text style={styles.errorText}>{modelLoadError}</Text>
+      </View>
+    );
+  }
+
   if (!Permission?.granted) {
     return (
       <View style={styles.noPerContainer}>
@@ -283,13 +293,14 @@ const Main = () => {
                 style={styles.controlBtn}
                 onPress={handleImagePicker}
                 activeOpacity={0.8}
+                disabled={isTakingPicture || !isModelReady}
               >
                 <MaterialIcons name="insert-photo" size={40} color="white" />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.controlBtn}
                 onPress={handleTakePicture}
-                disabled={isTakingPicture}
+                disabled={isTakingPicture || !isModelReady}
                 activeOpacity={0.5}
               >
                 <Ionicons
@@ -298,7 +309,7 @@ const Main = () => {
                   color="white"
                 />
               </TouchableOpacity>
-              <View style={styles.controlBtn}/>
+              <View style={styles.controlBtn} />
               {/* <TouchableOpacity
                 style={[
                   styles.controlBtn,
