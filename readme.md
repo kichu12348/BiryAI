@@ -24,7 +24,7 @@ The model employs a technique I call "Multi-Layered Spice Recognition" (MLSR), w
 
 ```bash
 # Clone this repository
-git clone https://github.com/yourname/biri-detector.git
+git clone https://github.com/kichu12348/BiryAI.git
 
 # Install dependencies
 cd biri-detector
