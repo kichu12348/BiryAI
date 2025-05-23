@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const modelWeights =
   "https://cdn.jsdelivr.net/gh/kichu12348/BiryAI@master/assets/model/weights.bin";
 const modelJson =
-  "https://cdn.jsdelivr.net/gh/kichu12348/BiryAI@master/assets/model/model.json";
+  "https://cdn.jsdelivr.net/gh/kichu12348/BiryAI@master/assets/model/model_3/model.json";
 
 async function downloadAndCacheModel() {
   try {
